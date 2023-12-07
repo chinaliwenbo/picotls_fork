@@ -144,7 +144,7 @@ BORINGSSL_ADJUST()
 
 
 MESSAGE(STATUS "  Enabling OpenSSL support")
-INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${OPENSSL_INC_DIR})
 ADD_LIBRARY(picotls-openssl lib/openssl.c)
 TARGET_LINK_LIBRARIES(picotls-openssl ${OPENSSL_CRYPTO_LIBRARIES} ${AEGIS_LIBRARIES} picotls-core ${CMAKE_DL_LIBS})
 ADD_EXECUTABLE(cli t/cli.c lib/pembase64.c)
@@ -240,7 +240,7 @@ IF (BUILD_FUZZER)
 
     ADD_EXECUTABLE(fuzz-asn1 fuzz/fuzz-asn1.c)
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
-    INCLUDE_DIRECTORIES(t include ${OPENSSL_INCLUDE_DIR})
+    INCLUDE_DIRECTORIES(t include ${OPENSSL_INC_DIR})
     ADD_DEFINITIONS(-DPTLS_FUZZ_HANDSHAKE=1)
     ADD_EXECUTABLE(fuzz-server-hello fuzz/fuzz-server-hello.c)
     ADD_EXECUTABLE(fuzz-client-hello fuzz/fuzz-client-hello.c)
