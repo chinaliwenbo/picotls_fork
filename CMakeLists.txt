@@ -27,4 +27,4 @@ SET(CORE_FILES
 ADD_LIBRARY(picotls-core ${CORE_FILES})
 
 INCLUDE_DIRECTORIES(${OPENSSL_INC_DIR})
-ADD_LIBRARY(picotls-openssl lib/openssl.c ${OPENSLL_LIB_DIR}/libcrypto.a)
+ADD_LIBRARY(picotls-openssl lib/openssl.c)
