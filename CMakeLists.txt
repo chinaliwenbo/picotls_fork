@@ -18,21 +18,7 @@ INCLUDE_DIRECTORIES(
     deps/picotest
     include
     ${CMAKE_CURRENT_BINARY_DIR})
-SET(MINICRYPTO_LIBRARY_FILES
-    deps/micro-ecc/uECC.c
-    deps/cifra/src/aes.c
-    deps/cifra/src/blockwise.c
-    deps/cifra/src/chacha20.c
-    deps/cifra/src/chash.c
-    deps/cifra/src/curve25519.c
-    deps/cifra/src/drbg.c
-    deps/cifra/src/hmac.c
-    deps/cifra/src/gcm.c
-    deps/cifra/src/gf128.c
-    deps/cifra/src/modes.c
-    deps/cifra/src/poly1305.c
-    deps/cifra/src/sha256.c
-    deps/cifra/src/sha512.c)
+
 SET(CORE_FILES
     lib/hpke.c
     lib/picotls.c
@@ -42,10 +28,6 @@ SET(CORE_TEST_FILES
     t/picotls.c)
 
 ADD_LIBRARY(picotls-core ${CORE_FILES})
-TARGET_LINK_LIBRARIES(picotls-core ${CORE_EXTRA_LIBS})
-TARGET_LINK_DIRECTORIES(picotls-core PUBLIC ${CORE_EXTRA_LIBS_DIRS})
-
 
 INCLUDE_DIRECTORIES(${OPENSSL_INC_DIR})
 ADD_LIBRARY(picotls-openssl lib/openssl.c)
-TARGET_LINK_LIBRARIES(picotls-openssl ${OPENSSL_CRYPTO_LIBRARIES} ${AEGIS_LIBRARIES} picotls-core ${CMAKE_DL_LIBS})
