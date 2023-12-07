@@ -23,11 +23,8 @@ SET(CORE_FILES
     lib/hpke.c
     lib/picotls.c
     lib/pembase64.c)
-SET(CORE_TEST_FILES
-    t/hpke.c
-    t/picotls.c)
 
 ADD_LIBRARY(picotls-core ${CORE_FILES})
 
 INCLUDE_DIRECTORIES(${OPENSSL_INC_DIR})
-ADD_LIBRARY(picotls-openssl lib/openssl.c)
+ADD_LIBRARY(picotls-openssl lib/openssl.c ${OPENSLL_LIB_DIR}/libcrypto.a)
