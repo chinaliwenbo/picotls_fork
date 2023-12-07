@@ -140,42 +140,39 @@ IF (WITH_AEGIS)
   ENDIF()
 ENDIF()
 
-FIND_PACKAGE(OpenSSL)
 BORINGSSL_ADJUST()
 
-IF (OPENSSL_FOUND AND NOT (OPENSSL_VERSION VERSION_LESS "1.0.1"))
-    MESSAGE(STATUS "  Enabling OpenSSL support")
-    INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR})
-    ADD_LIBRARY(picotls-openssl lib/openssl.c)
-    TARGET_LINK_LIBRARIES(picotls-openssl ${OPENSSL_CRYPTO_LIBRARIES} ${AEGIS_LIBRARIES} picotls-core ${CMAKE_DL_LIBS})
-    ADD_EXECUTABLE(cli t/cli.c lib/pembase64.c)
-    TARGET_LINK_LIBRARIES(cli picotls-openssl picotls-core)
 
-    ADD_EXECUTABLE(test-openssl.t
-        ${MINICRYPTO_LIBRARY_FILES}
-        ${MINICRYPTO_AEGIS_FILES}
-        lib/cifra.c
-        lib/cifra/x25519.c
-        lib/cifra/chacha20.c
-        lib/cifra/aes128.c
-        lib/cifra/aes256.c
-        lib/cifra/random.c
-        lib/uecc.c
-        lib/asn1.c
-        lib/pembase64.c
-        lib/ffx.c
-        deps/picotest/picotest.c
-        ${CORE_TEST_FILES}
-        t/openssl.c)
-    SET_TARGET_PROPERTIES(test-openssl.t PROPERTIES COMPILE_FLAGS "-DPTLS_MEMORY_DEBUG=1")
-    TARGET_LINK_LIBRARIES(test-openssl.t ${OPENSSL_CRYPTO_LIBRARIES} ${AEGIS_LIBRARIES} ${CMAKE_DL_LIBS})
+MESSAGE(STATUS "  Enabling OpenSSL support")
+INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR})
+ADD_LIBRARY(picotls-openssl lib/openssl.c)
+TARGET_LINK_LIBRARIES(picotls-openssl ${OPENSSL_CRYPTO_LIBRARIES} ${AEGIS_LIBRARIES} picotls-core ${CMAKE_DL_LIBS})
+ADD_EXECUTABLE(cli t/cli.c lib/pembase64.c)
+TARGET_LINK_LIBRARIES(cli picotls-openssl picotls-core)
 
-    LIST(APPEND PTLSBENCH_LIBS picotls-openssl ${OPENSSL_CRYPTO_LIBRARIES} ${AEGIS_LIBRARIES} ${CMAKE_DL_LIBS})
+ADD_EXECUTABLE(test-openssl.t
+    ${MINICRYPTO_LIBRARY_FILES}
+    ${MINICRYPTO_AEGIS_FILES}
+    lib/cifra.c
+    lib/cifra/x25519.c
+    lib/cifra/chacha20.c
+    lib/cifra/aes128.c
+    lib/cifra/aes256.c
+    lib/cifra/random.c
+    lib/uecc.c
+    lib/asn1.c
+    lib/pembase64.c
+    lib/ffx.c
+    deps/picotest/picotest.c
+    ${CORE_TEST_FILES}
+    t/openssl.c)
+SET_TARGET_PROPERTIES(test-openssl.t PROPERTIES COMPILE_FLAGS "-DPTLS_MEMORY_DEBUG=1")
+TARGET_LINK_LIBRARIES(test-openssl.t ${OPENSSL_CRYPTO_LIBRARIES} ${AEGIS_LIBRARIES} ${CMAKE_DL_LIBS})
 
-    SET(TEST_EXES ${TEST_EXES} test-openssl.t)
-ELSE ()
-    MESSAGE(WARNING "Disabling OpenSSL support (requires 1.0.1 or newer)")
-ENDIF ()
+LIST(APPEND PTLSBENCH_LIBS picotls-openssl ${OPENSSL_CRYPTO_LIBRARIES} ${AEGIS_LIBRARIES} ${CMAKE_DL_LIBS})
+
+SET(TEST_EXES ${TEST_EXES} test-openssl.t)
+
 
 IF (WITH_FUSION)
     ADD_LIBRARY(picotls-fusion lib/fusion.c)
