@@ -14,14 +14,14 @@ SET(CMAKE_C_FLAGS "-std=c99 -Wall -O2 -g ${CC_WARNING_FLAGS} ${CMAKE_C_FLAGS}")
 
 ADD_LIBRARY(picotls-core lib/hpke.c lib/picotls.c lib/pembase64.c)
 target_include_directories(picotls-core
-    deps/cifra/src/ext
-    deps/cifra/src
-    deps/micro-ecc
-    deps/picotest
-    ${CMAKE_CURRENT_BINARY_DIR})
+    PUBLIC deps/cifra/src/ext
+    PUBLIC deps/cifra/src
+    PUBLIC deps/micro-ecc
+    PUBLIC deps/picotest
+    PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
 # 加密库的编译, openssl
 ADD_LIBRARY(picotls-openssl lib/openssl.c)
 target_include_directories(picotls-openssl
-    ${OPENSSL_INC_DIR}
+    PUBLIC ${OPENSSL_INC_DIR}
 )
