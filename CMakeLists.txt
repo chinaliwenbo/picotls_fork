@@ -23,5 +23,5 @@ target_include_directories(picotls-core
 # 加密库的编译, openssl
 ADD_LIBRARY(picotls-openssl lib/openssl.c)
 target_include_directories(picotls-openssl
-    BEFORE ${OPENSSL_INC_DIR}
+    ${OPENSSL_INC_DIR}
 )
