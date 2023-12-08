@@ -12,19 +12,16 @@ ENDIF ()
 SET(CMAKE_C_FLAGS "-std=c99 -Wall -O2 -g ${CC_WARNING_FLAGS} ${CMAKE_C_FLAGS}")
 
 
-# 核心库的编译, 握手那些
-INCLUDE_DIRECTORIES(
+ADD_LIBRARY(picotls-core lib/hpke.c lib/picotls.c lib/pembase64.c)
+target_include_directores(picotls-core
     deps/cifra/src/ext
     deps/cifra/src
     deps/micro-ecc
     deps/picotest
     ${CMAKE_CURRENT_BINARY_DIR})
-SET(CORE_FILES
-    lib/hpke.c
-    lib/picotls.c
-    lib/pembase64.c)
-ADD_LIBRARY(picotls-core ${CORE_FILES})
 
-# 加密库的编译, openssl, 注意版本, 加到最前面, 用自定义的
-INCLUDE_DIRECTORIES(BEFORE ${OPENSSL_INC_DIR})
+# 加密库的编译, openssl
 ADD_LIBRARY(picotls-openssl lib/openssl.c)
+target_include_directores(picotls-openssl
+    BEFORE ${OPENSSL_INC_DIR}
+)
