@@ -25,6 +25,6 @@ SET(CORE_FILES
     lib/pembase64.c)
 ADD_LIBRARY(picotls-core ${CORE_FILES})
 
-# 加密库的编译, openssl, 注意版本
-INCLUDE_DIRECTORIES(${OPENSSL_INC_DIR} BEFORE)
+# 加密库的编译, openssl, 注意版本, 加到最前面, 用自定义的
+INCLUDE_DIRECTORIES(BEFORE ${OPENSSL_INC_DIR})
 ADD_LIBRARY(picotls-openssl lib/openssl.c)
