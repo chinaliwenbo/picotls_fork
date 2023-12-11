@@ -18,10 +18,12 @@ target_include_directories(picotls-core
     PUBLIC deps/cifra/src
     PUBLIC deps/micro-ecc
     PUBLIC deps/picotest
+    PUBLIC include
     PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
 # 加密库的编译, 使用openssl的库来做
 ADD_LIBRARY(picotls-openssl lib/openssl.c)
 target_include_directories(picotls-openssl
-    PUBLIC /home/ubuntu/code/3rdparty/openssl/src/openssl-1.1.1v/build/include
+    PUBLIC /home/ubuntu/openssl-3.2.0/build/include
+    PUBLIC include
 )
