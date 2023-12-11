@@ -24,6 +24,7 @@ target_include_directories(picotls-core
 # 加密库的编译, 使用openssl的库来做
 ADD_LIBRARY(picotls-openssl lib/openssl.c)
 target_include_directories(picotls-openssl
-    PUBLIC /home/ubuntu/openssl-1.1.1w/build/include
+    PUBLIC /home/ubuntu/openssl-3.0.2/build/include
     PUBLIC include
 )
+

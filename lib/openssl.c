@@ -2227,16 +2227,28 @@ ptls_cipher_suite_t ptls_openssl_aegis256sha512 = {.id = PTLS_CIPHER_SUITE_AEGIS
 #endif
 
 
-
-ptls_cipher_suite_t *ptls_openssl_cipher_suites[] = {// ciphers used with sha384 (must be first)
-                                                     &ptls_openssl_aes256gcmsha384,
-
+ptls_cipher_suite_t *ptls_openssl_cipher_suites[] = {
                                                      // ciphers used with sha256
                                                      &ptls_openssl_aes128gcmsha256,
+
+                                                     // ciphers used with sha384 (must be first)
+                                                     &ptls_openssl_aes256gcmsha384,
+
+
 #if PTLS_OPENSSL_HAVE_CHACHA20_POLY1305
                                                      &ptls_openssl_chacha20poly1305sha256,
 #endif
                                                      NULL};
+
+// ptls_cipher_suite_t *ptls_openssl_cipher_suites[] = {// ciphers used with sha384 (must be first)
+//                                                      &ptls_openssl_aes256gcmsha384,
+
+//                                                      // ciphers used with sha256
+//                                                      &ptls_openssl_aes128gcmsha256,
+// #if PTLS_OPENSSL_HAVE_CHACHA20_POLY1305
+//                                                      &ptls_openssl_chacha20poly1305sha256,
+// #endif
+//                                                      NULL};
 
 ptls_cipher_suite_t *ptls_openssl_cipher_suites_all[] = {// ciphers used with sha384 (must be first)
 #if PTLS_HAVE_AEGIS
