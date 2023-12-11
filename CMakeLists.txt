@@ -20,9 +20,8 @@ target_include_directories(picotls-core
     PUBLIC deps/picotest
     PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
-# 加密库的编译, openssl
-message(status =========${OPENSSL_INC_DIR} )
+# 加密库的编译, 使用openssl的库来做
 ADD_LIBRARY(picotls-openssl lib/openssl.c)
 target_include_directories(picotls-openssl
-    PUBLIC ${OPENSSL_INC_DIR}
+    PUBLIC /home/ubuntu/code/3rdparty/openssl/src/openssl-1.1.1v/build/include
 )
