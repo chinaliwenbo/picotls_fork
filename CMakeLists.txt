@@ -21,6 +21,7 @@ target_include_directories(picotls-core
     PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
 # 加密库的编译, openssl
+message(status =========${OPENSSL_INC_DIR} )
 ADD_LIBRARY(picotls-openssl lib/openssl.c)
 target_include_directories(picotls-openssl
     PUBLIC ${OPENSSL_INC_DIR}
