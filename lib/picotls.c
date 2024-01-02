@@ -2524,7 +2524,7 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
     }
     sh->is_retry_request = memcmp(src, hello_retry_random, PTLS_HELLO_RANDOM_SIZE) == 0;
     src += PTLS_HELLO_RANDOM_SIZE;
-
+printf("5555\n");
     /* legacy_session_id */
     ptls_decode_open_block(src, end, 1, {
         if (end - src > 32) {
@@ -2534,7 +2534,7 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
         sh->legacy_session_id = ptls_iovec_init(src, end - src);
         src = end;
     });
-
+printf("3333\n");
     { /* select cipher_suite */
         uint16_t csid;
         if ((ret = ptls_decode16(&csid, &src, end)) != 0)
@@ -2544,7 +2544,7 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
             goto Exit;
         }
     }
-
+    printf("2222\n");
     { /* legacy_compression_method */
         uint8_t method;
         if ((ret = ptls_decode8(&method, &src, end)) != 0)
@@ -2554,7 +2554,7 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
             goto Exit;
         }
     }
-
+    printf("11111\n");
     if (sh->is_retry_request)
         sh->retry_request.selected_group = UINT16_MAX;
 
