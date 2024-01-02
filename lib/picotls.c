@@ -2509,19 +2509,20 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
     int ret;
 
     *sh = (struct st_ptls_server_hello_t){{0}};
-
+printf("7777\n");
     /* ignore legacy-version */
     if (end - src < 2) {
         ret = PTLS_ALERT_DECODE_ERROR;
         goto Exit;
     }
     src += 2;
-
+printf("8888\n");
     /* random */
     if (end - src < PTLS_HELLO_RANDOM_SIZE) {
         ret = PTLS_ALERT_DECODE_ERROR;
         goto Exit;
     }
+    printf("9999\n");
     sh->is_retry_request = memcmp(src, hello_retry_random, PTLS_HELLO_RANDOM_SIZE) == 0;
     src += PTLS_HELLO_RANDOM_SIZE;
 printf("5555\n");
