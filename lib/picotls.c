@@ -2562,11 +2562,8 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
                       {
                           if (tls->ctx->on_extension != NULL &&
                               (ret = tls->ctx->on_extension->cb(tls->ctx->on_extension, tls, PTLS_HANDSHAKE_TYPE_SERVER_HELLO,
-                                                                exttype, ptls_iovec_init(src, end - src)) != 0)){
-                                                                    printf("在这里退出了1\n");
-                                                                    goto Exit;
-                                                                }
-                              
+                                                                exttype, ptls_iovec_init(src, end - src)) != 0))
+                              goto Exit;
                           switch (exttype) {
                           case PTLS_EXTENSION_TYPE_SUPPORTED_VERSIONS:
                               if ((ret = ptls_decode16(&found_version, &src, end)) != 0)
@@ -2627,26 +2624,22 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
 
     if (!is_supported_version(found_version)) {
         ret = PTLS_ALERT_ILLEGAL_PARAMETER;
-        printf("在这里退出了2\n");
         goto Exit;
     }
     if (!sh->is_retry_request) {
         if (selected_psk_identity != UINT16_MAX) {
             if (!tls->client.offered_psk) {
-                printf("在这里退出了3\n");
                 ret = PTLS_ALERT_ILLEGAL_PARAMETER;
                 goto Exit;
             }
             if (selected_psk_identity != 0) {
                 ret = PTLS_ALERT_ILLEGAL_PARAMETER;
-                printf("在这里退出了4\n");
                 goto Exit;
             }
             tls->is_psk_handshake = 1;
         }
         if (sh->peerkey.base == NULL && !tls->is_psk_handshake) {
             ret = PTLS_ALERT_ILLEGAL_PARAMETER;
-            printf("在这里退出了5\n");
             goto Exit;
         }
     }
@@ -2874,6 +2867,7 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             goto Exit;
         switch (type) {
         case PTLS_EXTENSION_TYPE_SERVER_NAME:
+            printf("PTLS_EXTENSION_TYPE_SERVER_NAME\n");
             if (src != end) {
                 ret = PTLS_ALERT_DECODE_ERROR;
                 goto Exit;
@@ -2884,6 +2878,7 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             }
             break;
         case PTLS_EXTENSION_TYPE_ALPN:
+            printf("PTLS_EXTENSION_TYPE_ALPN\n");
             ptls_decode_block(src, end, 2, {
                 ptls_decode_open_block(src, end, 1, {
                     if (src == end) {
@@ -2901,6 +2896,7 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             });
             break;
         case PTLS_EXTENSION_TYPE_EARLY_DATA:
+            printf("PTLS_EXTENSION_TYPE_EARLY_DATA\n");
             if (!tls->client.using_early_data) {
                 ret = PTLS_ALERT_ILLEGAL_PARAMETER;
                 goto Exit;
@@ -2908,6 +2904,7 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             skip_early_data = 0;
             break;
         case PTLS_EXTENSION_TYPE_SERVER_CERTIFICATE_TYPE:
+            printf("PTLS_EXTENSION_TYPE_SERVER_CERTIFICATE_TYPE\n");
             if (end - src != 1) {
                 ret = PTLS_ALERT_DECODE_ERROR;
                 goto Exit;
@@ -2916,6 +2913,7 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             src = end;
             break;
         case PTLS_EXTENSION_TYPE_ENCRYPTED_CLIENT_HELLO: {
+            printf("PTLS_EXTENSION_TYPE_ENCRYPTED_CLIENT_HELLO\n");
             /* accept retry_configs only if we offered ECH but rejected */
             if (!((tls->ech.offered || tls->ech.offered_grease) && !ptls_is_ech_handshake(tls, NULL, NULL, NULL))) {
                 ret = PTLS_ALERT_UNSUPPORTED_EXTENSION;
@@ -2937,6 +2935,7 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             src = end;
         } break;
         default:
+            printf("should_collect_unknown_extension\n");
             if (should_collect_unknown_extension(tls, properties, type)) {
                 if (unknown_extensions == &no_unknown_extensions) {
                     if ((unknown_extensions = malloc(sizeof(*unknown_extensions) * (MAX_UNKNOWN_EXTENSIONS + 1))) == NULL) {
@@ -2945,8 +2944,11 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
                     }
                     unknown_extensions[0].type = UINT16_MAX;
                 }
-                if ((ret = collect_unknown_extension(tls, type, src, end, unknown_extensions)) != 0)
+                if ((ret = collect_unknown_extension(tls, type, src, end, unknown_extensions)) != 0){
+                    printf("should_collect_unknown_extension, ERROR\n");
                     goto Exit;
+                }
+                    
             }
             break;
         }
