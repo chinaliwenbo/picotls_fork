@@ -5782,6 +5782,7 @@ static void init_record_message_emitter(ptls_t *tls, struct st_ptls_record_messa
 int ptls_handshake(ptls_t *tls, ptls_buffer_t *_sendbuf, const void *input, size_t *inlen, ptls_handshake_properties_t *properties)
 {
     printf("5784\n");
+    fflush(stdout);
     struct st_ptls_record_message_emitter_t emitter;
     int ret;
 
