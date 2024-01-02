@@ -2562,8 +2562,11 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
                       {
                           if (tls->ctx->on_extension != NULL &&
                               (ret = tls->ctx->on_extension->cb(tls->ctx->on_extension, tls, PTLS_HANDSHAKE_TYPE_SERVER_HELLO,
-                                                                exttype, ptls_iovec_init(src, end - src)) != 0))
-                              goto Exit;
+                                                                exttype, ptls_iovec_init(src, end - src)) != 0)){
+                                                                    printf("在这里退出了1\n");
+                                                                    goto Exit;
+                                                                }
+                              
                           switch (exttype) {
                           case PTLS_EXTENSION_TYPE_SUPPORTED_VERSIONS:
                               if ((ret = ptls_decode16(&found_version, &src, end)) != 0)
@@ -2624,22 +2627,26 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
 
     if (!is_supported_version(found_version)) {
         ret = PTLS_ALERT_ILLEGAL_PARAMETER;
+        printf("在这里退出了2\n");
         goto Exit;
     }
     if (!sh->is_retry_request) {
         if (selected_psk_identity != UINT16_MAX) {
             if (!tls->client.offered_psk) {
+                printf("在这里退出了3\n");
                 ret = PTLS_ALERT_ILLEGAL_PARAMETER;
                 goto Exit;
             }
             if (selected_psk_identity != 0) {
                 ret = PTLS_ALERT_ILLEGAL_PARAMETER;
+                printf("在这里退出了4\n");
                 goto Exit;
             }
             tls->is_psk_handshake = 1;
         }
         if (sh->peerkey.base == NULL && !tls->is_psk_handshake) {
             ret = PTLS_ALERT_ILLEGAL_PARAMETER;
+            printf("在这里退出了5\n");
             goto Exit;
         }
     }
