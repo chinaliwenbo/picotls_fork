@@ -888,7 +888,8 @@ static int commit_record_message(ptls_message_emitter_t *_self)
     } while (0)
 
 #define decode_extensions(src, end, hstype, exttype, block)                                                                        \
-    do {                                                                                                                           \
+    do {                                                                                                                           \          
+        printf("进来嘞\n");                                                                                         \
         decode_open_extensions((src), end, hstype, exttype, block);                                                                \
         ptls_decode_assert_block_close((src), end);                                                                                \
     } while (0)
