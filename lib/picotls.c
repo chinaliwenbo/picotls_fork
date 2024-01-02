@@ -2737,11 +2737,11 @@ Exit:
 static int client_handle_hello(ptls_t *tls, ptls_message_emitter_t *emitter, ptls_iovec_t message,
                                ptls_handshake_properties_t *properties)
 {
-    print("2740\n");
+    printf("2740\n");
     struct st_ptls_server_hello_t sh;
     ptls_iovec_t ecdh_secret = {NULL};
     int ret;
-    print("2743\n");
+    printf("2743\n");
     if ((ret = decode_server_hello(tls, &sh, message.base + PTLS_HANDSHAKE_HEADER_SIZE, message.base + message.len)) != 0)
         goto Exit;
     if (!(sh.legacy_session_id.len == tls->client.legacy_session_id.len &&
