@@ -2566,10 +2566,12 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
                               goto Exit;
                           switch (exttype) {
                           case PTLS_EXTENSION_TYPE_SUPPORTED_VERSIONS:
+                                printf("PTLS_EXTENSION_TYPE_SUPPORTED_VERSIONS\n");
                               if ((ret = ptls_decode16(&found_version, &src, end)) != 0)
                                   goto Exit;
                               break;
                           case PTLS_EXTENSION_TYPE_KEY_SHARE:
+                          printf("PTLS_EXTENSION_TYPE_KEY_SHARE\n");
                               if (sh->is_retry_request) {
                                   if ((ret = ptls_decode16(&sh->retry_request.selected_group, &src, end)) != 0)
                                       goto Exit;
@@ -2588,6 +2590,7 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
                               }
                               break;
                           case PTLS_EXTENSION_TYPE_COOKIE:
+                          printf("PTLS_EXTENSION_TYPE_COOKIE\n");
                               assert(sh->is_retry_request);
                               ptls_decode_block(src, end, 2, {
                                   if (src == end) {
@@ -2599,11 +2602,13 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
                               });
                               break;
                           case PTLS_EXTENSION_TYPE_PRE_SHARED_KEY:
+                          printf("PTLS_EXTENSION_TYPE_PRE_SHARED_KEY\n");
                               assert(!sh->is_retry_request);
                               if ((ret = ptls_decode16(&selected_psk_identity, &src, end)) != 0)
                                   goto Exit;
                               break;
                           case PTLS_EXTENSION_TYPE_ENCRYPTED_CLIENT_HELLO:
+                          printf("PTLS_EXTENSION_TYPE_ENCRYPTED_CLIENT_HELLO\n");
                               assert(sh->is_retry_request);
                               if (!(tls->ech.offered || tls->ech.offered_grease)) {
                                   ret = PTLS_ALERT_UNSUPPORTED_EXTENSION;
@@ -2617,11 +2622,13 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
                               src = end;
                               break;
                           default:
+                                                    printf("default\n");
                               src = end;
                               break;
                           }
                       });
 
+    printf("这里退出了111\n");
     if (!is_supported_version(found_version)) {
         ret = PTLS_ALERT_ILLEGAL_PARAMETER;
         goto Exit;
