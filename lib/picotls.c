@@ -2737,10 +2737,11 @@ Exit:
 static int client_handle_hello(ptls_t *tls, ptls_message_emitter_t *emitter, ptls_iovec_t message,
                                ptls_handshake_properties_t *properties)
 {
+    print("2740\n");
     struct st_ptls_server_hello_t sh;
     ptls_iovec_t ecdh_secret = {NULL};
     int ret;
-
+    print("2743\n");
     if ((ret = decode_server_hello(tls, &sh, message.base + PTLS_HANDSHAKE_HEADER_SIZE, message.base + message.len)) != 0)
         goto Exit;
     if (!(sh.legacy_session_id.len == tls->client.legacy_session_id.len &&
@@ -5384,6 +5385,7 @@ static int handle_client_handshake_message(ptls_t *tls, ptls_message_emitter_t *
     case PTLS_STATE_CLIENT_EXPECT_SERVER_HELLO:
     case PTLS_STATE_CLIENT_EXPECT_SECOND_SERVER_HELLO:
         if (type == PTLS_HANDSHAKE_TYPE_SERVER_HELLO && is_end_of_record) {
+            printf("5388\n");
             ret = client_handle_hello(tls, emitter, message, properties);
         } else {
             ret = PTLS_ALERT_UNEXPECTED_MESSAGE;
