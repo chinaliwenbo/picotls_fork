@@ -9,7 +9,8 @@ IF (CMAKE_VERSION VERSION_LESS 3.13.0)
   ENDMACRO ()
 ENDIF ()
 
-SET(CMAKE_C_FLAGS "-std=c99 -Wall -O2 -g ${CC_WARNING_FLAGS} ${CMAKE_C_FLAGS}")
+# SET(CMAKE_C_FLAGS "-std=c99 -Wall -O2 -g ${CC_WARNING_FLAGS} ${CMAKE_C_FLAGS}")
+SET(CMAKE_C_FLAGS "-std=c99 -Wall -O0 -g ${CC_WARNING_FLAGS} ${CMAKE_C_FLAGS}")
 
 
 ADD_LIBRARY(picotls-core lib/hpke.c lib/picotls.c lib/pembase64.c)
