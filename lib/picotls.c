@@ -2560,10 +2560,11 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
     uint16_t exttype, found_version = UINT16_MAX, selected_psk_identity = UINT16_MAX;
     decode_extensions(src, end, sh->is_retry_request ? PTLS_HANDSHAKE_TYPE_PSEUDO_HRR : PTLS_HANDSHAKE_TYPE_SERVER_HELLO, &exttype,
                       {
-                          if (tls->ctx->on_extension != NULL &&
-                              (ret = tls->ctx->on_extension->cb(tls->ctx->on_extension, tls, PTLS_HANDSHAKE_TYPE_SERVER_HELLO,
-                                                                exttype, ptls_iovec_init(src, end - src)) != 0))
+                          if (tls->ctx->on_extension != NULL && (ret = tls->ctx->on_extension->cb(tls->ctx->on_extension, tls, PTLS_HANDSHAKE_TYPE_SERVER_HELLO, exttype, ptls_iovec_init(src, end - src)) != 0)) {
+                                printf("这里\n");
                               goto Exit;
+                          }
+                            
                           switch (exttype) {
                           case PTLS_EXTENSION_TYPE_SUPPORTED_VERSIONS:
                                 printf("PTLS_EXTENSION_TYPE_SUPPORTED_VERSIONS\n");
