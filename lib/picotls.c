@@ -1810,6 +1810,7 @@ static int verify_finished(ptls_t *tls, ptls_iovec_t message)
     if ((ret = calc_verify_data(verify_data, tls->key_schedule, tls->traffic_protection.dec.secret)) != 0)
         goto Exit;
     if (!ptls_mem_equal(message.base + PTLS_HANDSHAKE_HEADER_SIZE, verify_data, tls->key_schedule->hashes[0].algo->digest_size)) {
+        fprintf(stderr, "报错16\n");
         ret = PTLS_ALERT_HANDSHAKE_FAILURE;
         goto Exit;
     }
@@ -2014,6 +2015,7 @@ static int select_cipher(ptls_cipher_suite_t **selected, ptls_cipher_suite_t **c
         *selected = candidates[found_index];
         ret = 0;
     } else {
+        fprintf(stderr, "报错17\n");
         ret = PTLS_ALERT_HANDSHAKE_FAILURE;
     }
 
@@ -2895,6 +2897,7 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
                     src = end;
                 });
                 if (src != end) {
+                    fprintf(stderr, "报错1\n");
                     ret = PTLS_ALERT_HANDSHAKE_FAILURE;
                     goto Exit;
                 }
@@ -3515,7 +3518,7 @@ static int select_negotiated_group(ptls_key_exchange_algorithm_t **selected, ptl
             }
         }
     });
-
+    fprintf(stderr, "报错2\n");
     ret = PTLS_ALERT_HANDSHAKE_FAILURE;
 
 Exit:
@@ -3957,8 +3960,11 @@ static int check_client_hello_constraints(ptls_context_t *ctx, struct st_ptls_cl
 
     /* The following check is necessary so that we would be able to track the connection in SSLKEYLOGFILE, even though it might not
      * be for the safety of the protocol. */
-    if (is_second_flight && !ptls_mem_equal(ch->random_bytes, prev_random, PTLS_HELLO_RANDOM_SIZE))
+    if (is_second_flight && !ptls_mem_equal(ch->random_bytes, prev_random, PTLS_HELLO_RANDOM_SIZE)){
+        fprintf(stderr, "报错3\n");
         return PTLS_ALERT_HANDSHAKE_FAILURE;
+    }
+        
 
     /* bail out if CH cannot be handled as TLS 1.3 */
     if (!is_supported_version(ch->selected_version)) {
@@ -4360,6 +4366,7 @@ static int server_handle_hello(ptls_t *tls, ptls_message_emitter_t *emitter, ptl
             size_t l = strlen(tls->server_name);
             if (!(ch->server_name.len == l && memcmp(ch->server_name.base, tls->server_name, l) == 0)) {
                 ret = PTLS_ALERT_HANDSHAKE_FAILURE;
+                fprintf(stderr, "报错4\n");
                 goto Exit;
             }
         }
@@ -4378,6 +4385,7 @@ static int server_handle_hello(ptls_t *tls, ptls_message_emitter_t *emitter, ptl
             }
         } else {
             if (tls->cipher_suite != cs) {
+                fprintf(stderr, "报错5\n");
                 ret = PTLS_ALERT_HANDSHAKE_FAILURE;
                 goto Exit;
             }
@@ -4402,6 +4410,7 @@ static int server_handle_hello(ptls_t *tls, ptls_message_emitter_t *emitter, ptl
                 if ((ret = calc_cookie_signature(tls, properties, key_share.algorithm, ch->cookie.tbs, sig)) != 0)
                     goto Exit;
                 if (!(ch->cookie.signature.len == sigsize && ptls_mem_equal(ch->cookie.signature.base, sig, sigsize))) {
+                    fprintf(stderr, "报错6\n");
                     ret = PTLS_ALERT_HANDSHAKE_FAILURE;
                     goto Exit;
                 }
@@ -4575,6 +4584,7 @@ static int server_handle_hello(ptls_t *tls, ptls_message_emitter_t *emitter, ptl
     if (mode != HANDSHAKE_MODE_PSK) {
         if (key_share.algorithm == NULL) {
             ret = ch->key_shares.base != NULL ? PTLS_ALERT_HANDSHAKE_FAILURE : PTLS_ALERT_MISSING_EXTENSION;
+            fprintf(stderr, "报错7\n");
             goto Exit;
         }
         if ((ret = key_share.algorithm->exchange(key_share.algorithm, &pubkey, &ecdh_secret, key_share.peer_key)) != 0)
@@ -5144,6 +5154,7 @@ int ptls_import(ptls_context_t *ctx, ptls_t **tls, ptls_iovec_t params)
             goto Exit;
         (*tls)->cipher_suite = ptls_find_cipher_suite(ctx->tls12_cipher_suites, csid);
         if ((*tls)->cipher_suite == NULL) {
+            fprintf(stderr, "报错8\n");
             ret = PTLS_ALERT_HANDSHAKE_FAILURE;
             goto Exit;
         }
@@ -5471,6 +5482,7 @@ static int handle_server_handshake_message(ptls_t *tls, ptls_message_emitter_t *
         if (type == PTLS_HANDSHAKE_TYPE_CLIENT_HELLO && is_end_of_record) {
             ret = server_handle_hello(tls, emitter, message, properties);
         } else {
+            fprintf(stderr, "报错9\n");
             ret = PTLS_ALERT_HANDSHAKE_FAILURE;
         }
         break;
@@ -5500,6 +5512,7 @@ static int handle_server_handshake_message(ptls_t *tls, ptls_message_emitter_t *
         if (type == PTLS_HANDSHAKE_TYPE_FINISHED && is_end_of_record) {
             ret = server_handle_finished(tls, message);
         } else {
+            fprintf(stderr, "报错9\n");
             ret = PTLS_ALERT_HANDSHAKE_FAILURE;
         }
         break;
@@ -5568,8 +5581,11 @@ static int handle_handshake_record(ptls_t *tls,
         src = rec->fragment;
         src_end = src + rec->length;
     } else {
-        if (message_buffer_is_overflow(tls->ctx, tls->recvbuf.mess.off + rec->length))
+        if (message_buffer_is_overflow(tls->ctx, tls->recvbuf.mess.off + rec->length)){
+            fprintf(stderr, "报错10\n");
             return PTLS_ALERT_HANDSHAKE_FAILURE;
+        }
+            
         if ((ret = ptls_buffer_reserve(&tls->recvbuf.mess, rec->length)) != 0)
             return ret;
         memcpy(tls->recvbuf.mess.base + tls->recvbuf.mess.off, rec->fragment, rec->length);
@@ -5600,8 +5616,11 @@ static int handle_handshake_record(ptls_t *tls,
     /* keep last partial message in buffer */
     if (src != src_end) {
         size_t new_size = src_end - src;
-        if (message_buffer_is_overflow(tls->ctx, new_size))
+        if (message_buffer_is_overflow(tls->ctx, new_size)){
+            fprintf(stderr, "报错12\n");
             return PTLS_ALERT_HANDSHAKE_FAILURE;
+        }
+            
         if (tls->recvbuf.mess.base == NULL) {
             ptls_buffer_init(&tls->recvbuf.mess, "", 0);
             if ((ret = ptls_buffer_reserve(&tls->recvbuf.mess, new_size)) != 0)
@@ -5636,6 +5655,7 @@ static int handle_input(ptls_t *tls, ptls_message_emitter_t *emitter, ptls_buffe
             if (!(rec.length == 1 && rec.fragment[0] == 0x01))
                 return PTLS_ALERT_ILLEGAL_PARAMETER;
         } else {
+            fprintf(stderr, "报错13\n");
             return PTLS_ALERT_HANDSHAKE_FAILURE;
         }
         ret = PTLS_ERROR_IN_PROGRESS;
@@ -5643,8 +5663,11 @@ static int handle_input(ptls_t *tls, ptls_message_emitter_t *emitter, ptls_buffe
     }
     if (tls->traffic_protection.dec.aead != NULL && rec.type != PTLS_CONTENT_TYPE_ALERT) {
         size_t decrypted_length;
-        if (rec.type != PTLS_CONTENT_TYPE_APPDATA)
+        if (rec.type != PTLS_CONTENT_TYPE_APPDATA){
+            fprintf(stderr, "报错14\n");
             return PTLS_ALERT_HANDSHAKE_FAILURE;
+        }
+            
         if ((ret = ptls_buffer_reserve(decryptbuf, 5 + rec.length)) != 0)
             return ret;
         if ((ret = aead_decrypt(&tls->traffic_protection.dec, decryptbuf->base + decryptbuf->off, &decrypted_length, rec.fragment,
@@ -5700,8 +5723,11 @@ NextRecord:
 
 ServerSkipEarlyData:
     tls->server.early_data_skipped_bytes += (uint32_t)rec.length;
-    if (tls->server.early_data_skipped_bytes > PTLS_MAX_EARLY_DATA_SKIP_SIZE)
+    if (tls->server.early_data_skipped_bytes > PTLS_MAX_EARLY_DATA_SKIP_SIZE){
+        fprintf(stderr, "报错15\n");
         return PTLS_ALERT_HANDSHAKE_FAILURE;
+    }
+        
     ret = PTLS_ERROR_IN_PROGRESS;
     goto NextRecord;
 }
