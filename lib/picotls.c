@@ -5367,6 +5367,7 @@ static int handle_client_handshake_message(ptls_t *tls, ptls_message_emitter_t *
     fprintf(stderr, "PTLS_STATE_CLIENT_EXPECT_SECOND_SERVER_HELLO\n");
         if (type == PTLS_HANDSHAKE_TYPE_SERVER_HELLO && is_end_of_record) {
             ret = client_handle_hello(tls, emitter, message, properties);
+            fprintf(stderr, "PTLS_HANDSHAKE_TYPE_SERVER_HELLO, ret:%d\n", ret);
         } else {
             ret = PTLS_ALERT_UNEXPECTED_MESSAGE;
         }
