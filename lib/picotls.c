@@ -873,7 +873,8 @@ static int commit_record_message(ptls_message_emitter_t *_self)
 
 #define decode_open_extensions(src, end, hstype, exttype, block)                                                                   \
     do {                                                                                                                           \
-        struct st_ptls_extension_bitmap_t bitmap = {0};                                                                            \
+        struct st_ptls_extension_bitmap_t bitmap = {0};   \
+        fprintf(stderr, "结果为: %d\n", end-src);                                                                            \
         ptls_decode_open_block((src), end, 2, {                                                                                    \
             while ((src) != end) {                                                                                                 \
                 if ((ret = ptls_decode16((exttype), &(src), end)) != 0)                                                            \
