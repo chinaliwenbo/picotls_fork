@@ -5443,7 +5443,7 @@ fprintf(stderr, "PTLS_LOG_CONN\n");
         PTLS_LOG_ELEMENT_UNSIGNED(len, message.len - PTLS_HANDSHAKE_HEADER_SIZE);
         PTLS_LOG_ELEMENT_SIGNED(result, ret);
     });
-fprintf(stderr, "ret\n");
+fprintf(stderr, "ret: %d\n", ret);
     return ret;
 }
 
