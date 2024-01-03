@@ -1287,7 +1287,8 @@ uint64_t ptls_decode_quicint(const uint8_t **src, const uint8_t *end);
                 _block_size = _block_size << 8 | *(src)++;                                                                         \
             } while (--_capacity != 0);                                                                                            \
         }                                                                                                                          \
-        if (_block_size > (size_t)(end - (src))) {                                                                                 \
+        if (_block_size > (size_t)(end - (src))) {      \
+            fprintf(stderr, "相减的值: %lu\n", end - (src));                                                                           \
             ret = PTLS_ALERT_DECODE_ERROR;               \                   
             fprintf(stderr, "ptls_decode_open_block3\n");                                                                                                              \
             goto Exit;                                                                                                             \
