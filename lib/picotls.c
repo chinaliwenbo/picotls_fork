@@ -5364,6 +5364,7 @@ static int handle_client_handshake_message(ptls_t *tls, ptls_message_emitter_t *
     switch (tls->state) {
     case PTLS_STATE_CLIENT_EXPECT_SERVER_HELLO:
     case PTLS_STATE_CLIENT_EXPECT_SECOND_SERVER_HELLO:
+    fprintf(stderr, "PTLS_STATE_CLIENT_EXPECT_SECOND_SERVER_HELLO\n");
         if (type == PTLS_HANDSHAKE_TYPE_SERVER_HELLO && is_end_of_record) {
             ret = client_handle_hello(tls, emitter, message, properties);
         } else {
@@ -5371,13 +5372,16 @@ static int handle_client_handshake_message(ptls_t *tls, ptls_message_emitter_t *
         }
         break;
     case PTLS_STATE_CLIENT_EXPECT_ENCRYPTED_EXTENSIONS:
+    fprintf(stderr, "PTLS_STATE_CLIENT_EXPECT_ENCRYPTED_EXTENSIONS\n");
         if (type == PTLS_HANDSHAKE_TYPE_ENCRYPTED_EXTENSIONS) {
+
             ret = client_handle_encrypted_extensions(tls, message, properties);
         } else {
             ret = PTLS_ALERT_UNEXPECTED_MESSAGE;
         }
         break;
     case PTLS_STATE_CLIENT_EXPECT_CERTIFICATE_REQUEST_OR_CERTIFICATE:
+    fprintf(stderr, "PTLS_STATE_CLIENT_EXPECT_CERTIFICATE_REQUEST_OR_CERTIFICATE\n");
         if (type == PTLS_HANDSHAKE_TYPE_CERTIFICATE_REQUEST) {
             ret = client_handle_certificate_request(tls, message, properties);
             break;
