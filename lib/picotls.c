@@ -2629,24 +2629,24 @@ fprintf(stderr, "found_version\n");
             ret = PTLS_ALERT_ILLEGAL_PARAMETER;
             goto Exit;
         }
-    }
-    
-    fprintf(stderr, "is_retry_request\n");
-    if (!sh->is_retry_request) {
-        if (selected_psk_identity != UINT16_MAX) {
-            if (!tls->client.offered_psk) {
+
+        fprintf(stderr, "is_retry_request\n");
+        if (!sh->is_retry_request) {
+            if (selected_psk_identity != UINT16_MAX) {
+                if (!tls->client.offered_psk) {
+                    ret = PTLS_ALERT_ILLEGAL_PARAMETER;
+                    goto Exit;
+                }
+                if (selected_psk_identity != 0) {
+                    ret = PTLS_ALERT_ILLEGAL_PARAMETER;
+                    goto Exit;
+                }
+                tls->is_psk_handshake = 1;
+            }
+            if (sh->peerkey.base == NULL && !tls->is_psk_handshake) {
                 ret = PTLS_ALERT_ILLEGAL_PARAMETER;
                 goto Exit;
             }
-            if (selected_psk_identity != 0) {
-                ret = PTLS_ALERT_ILLEGAL_PARAMETER;
-                goto Exit;
-            }
-            tls->is_psk_handshake = 1;
-        }
-        if (sh->peerkey.base == NULL && !tls->is_psk_handshake) {
-            ret = PTLS_ALERT_ILLEGAL_PARAMETER;
-            goto Exit;
         }
     }
 
