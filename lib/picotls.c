@@ -2740,11 +2740,11 @@ static int client_handle_hello(ptls_t *tls, ptls_message_emitter_t *emitter, ptl
     if ((ret = decode_server_hello(tls, &sh, message.base + PTLS_HANDSHAKE_HEADER_SIZE, message.base + message.len)) != 0)
         goto Exit;
     fprintf(stderr, "出来了decode_server_hello\n");
-    if (!(sh.legacy_session_id.len == tls->client.legacy_session_id.len &&
-          ptls_mem_equal(sh.legacy_session_id.base, tls->client.legacy_session_id.base, tls->client.legacy_session_id.len))) {
-        ret = PTLS_ALERT_ILLEGAL_PARAMETER;
-        goto Exit;
-    }
+    // if (!(sh.legacy_session_id.len == tls->client.legacy_session_id.len &&
+    //       ptls_mem_equal(sh.legacy_session_id.base, tls->client.legacy_session_id.base, tls->client.legacy_session_id.len))) {
+    //     ret = PTLS_ALERT_ILLEGAL_PARAMETER;
+    //     goto Exit;
+    // }
 
     if (sh.is_retry_request) {
         if ((ret = key_schedule_select_cipher(tls->key_schedule, tls->cipher_suite, 0)) != 0)
