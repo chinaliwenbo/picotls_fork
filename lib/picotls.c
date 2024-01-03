@@ -5386,9 +5386,11 @@ static int handle_client_handshake_message(ptls_t *tls, ptls_message_emitter_t *
     case PTLS_STATE_CLIENT_EXPECT_CERTIFICATE:
         switch (type) {
         case PTLS_HANDSHAKE_TYPE_CERTIFICATE:
+        fprintf(stderr, "PTLS_HANDSHAKE_TYPE_CERTIFICATE\n");
             ret = client_handle_certificate(tls, message);
             break;
         case PTLS_HANDSHAKE_TYPE_COMPRESSED_CERTIFICATE:
+        fprintf(stderr, "PTLS_HANDSHAKE_TYPE_COMPRESSED_CERTIFICATE\n");
             ret = client_handle_compressed_certificate(tls, message);
             break;
         default:
@@ -5397,6 +5399,7 @@ static int handle_client_handshake_message(ptls_t *tls, ptls_message_emitter_t *
         }
         break;
     case PTLS_STATE_CLIENT_EXPECT_CERTIFICATE_VERIFY:
+    fprintf(stderr, "PTLS_STATE_CLIENT_EXPECT_CERTIFICATE_VERIFY\n");
         if (type == PTLS_HANDSHAKE_TYPE_CERTIFICATE_VERIFY) {
             ret = client_handle_certificate_verify(tls, message);
         } else {
@@ -5404,6 +5407,7 @@ static int handle_client_handshake_message(ptls_t *tls, ptls_message_emitter_t *
         }
         break;
     case PTLS_STATE_CLIENT_EXPECT_FINISHED:
+    fprintf(stderr, "PTLS_STATE_CLIENT_EXPECT_FINISHED\n");
         if (type == PTLS_HANDSHAKE_TYPE_FINISHED && is_end_of_record) {
             ret = client_handle_finished(tls, emitter, message);
         } else {
@@ -5411,6 +5415,7 @@ static int handle_client_handshake_message(ptls_t *tls, ptls_message_emitter_t *
         }
         break;
     case PTLS_STATE_CLIENT_POST_HANDSHAKE:
+    fprintf(stderr, "PTLS_STATE_CLIENT_POST_HANDSHAKE\n");
         switch (type) {
         case PTLS_HANDSHAKE_TYPE_NEW_SESSION_TICKET:
             ret = client_handle_new_session_ticket(tls, message);
@@ -5424,19 +5429,21 @@ static int handle_client_handshake_message(ptls_t *tls, ptls_message_emitter_t *
         }
         break;
     default:
-        assert(!"unexpected state");
+
+        assert(!"unexpected state\n");
         ret = PTLS_ALERT_INTERNAL_ERROR;
         break;
     }
-
+fprintf(stderr, "PTLS_PROBE\n");
     PTLS_PROBE(RECEIVE_MESSAGE, tls, message.base[0], message.base + PTLS_HANDSHAKE_HEADER_SIZE,
                message.len - PTLS_HANDSHAKE_HEADER_SIZE, ret);
+fprintf(stderr, "PTLS_LOG_CONN\n");
     PTLS_LOG_CONN(receive_message, tls, {
         PTLS_LOG_ELEMENT_UNSIGNED(message, message.base[0]);
         PTLS_LOG_ELEMENT_UNSIGNED(len, message.len - PTLS_HANDSHAKE_HEADER_SIZE);
         PTLS_LOG_ELEMENT_SIGNED(result, ret);
     });
-
+fprintf(stderr, "ret\n");
     return ret;
 }
 
