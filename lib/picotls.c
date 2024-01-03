@@ -888,8 +888,7 @@ static int commit_record_message(ptls_message_emitter_t *_self)
     } while (0)
 
 #define decode_extensions(src, end, hstype, exttype, block)                                                                        \
-    do {                                                                                                                           \          
-        printf("进来嘞\n");                                                                                         \
+    do {                                                                                                                           \
         decode_open_extensions((src), end, hstype, exttype, block);                                                                \
         ptls_decode_assert_block_close((src), end);                                                                                \
     } while (0)
@@ -2509,23 +2508,22 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
     int ret;
 
     *sh = (struct st_ptls_server_hello_t){{0}};
-printf("7777\n");
+
     /* ignore legacy-version */
     if (end - src < 2) {
         ret = PTLS_ALERT_DECODE_ERROR;
         goto Exit;
     }
     src += 2;
-printf("8888\n");
+
     /* random */
     if (end - src < PTLS_HELLO_RANDOM_SIZE) {
         ret = PTLS_ALERT_DECODE_ERROR;
         goto Exit;
     }
-    printf("9999\n");
     sh->is_retry_request = memcmp(src, hello_retry_random, PTLS_HELLO_RANDOM_SIZE) == 0;
     src += PTLS_HELLO_RANDOM_SIZE;
-printf("5555\n");
+
     /* legacy_session_id */
     ptls_decode_open_block(src, end, 1, {
         if (end - src > 32) {
@@ -2535,7 +2533,7 @@ printf("5555\n");
         sh->legacy_session_id = ptls_iovec_init(src, end - src);
         src = end;
     });
-printf("3333\n");
+
     { /* select cipher_suite */
         uint16_t csid;
         if ((ret = ptls_decode16(&csid, &src, end)) != 0)
@@ -2545,7 +2543,7 @@ printf("3333\n");
             goto Exit;
         }
     }
-    printf("2222\n");
+
     { /* legacy_compression_method */
         uint8_t method;
         if ((ret = ptls_decode8(&method, &src, end)) != 0)
@@ -2555,26 +2553,23 @@ printf("3333\n");
             goto Exit;
         }
     }
-    printf("11111\n");
+
     if (sh->is_retry_request)
         sh->retry_request.selected_group = UINT16_MAX;
 
     uint16_t exttype, found_version = UINT16_MAX, selected_psk_identity = UINT16_MAX;
     decode_extensions(src, end, sh->is_retry_request ? PTLS_HANDSHAKE_TYPE_PSEUDO_HRR : PTLS_HANDSHAKE_TYPE_SERVER_HELLO, &exttype,
                       {
-                          if (tls->ctx->on_extension != NULL && (ret = tls->ctx->on_extension->cb(tls->ctx->on_extension, tls, PTLS_HANDSHAKE_TYPE_SERVER_HELLO, exttype, ptls_iovec_init(src, end - src)) != 0)) {
-                                printf("这里\n");
+                          if (tls->ctx->on_extension != NULL &&
+                              (ret = tls->ctx->on_extension->cb(tls->ctx->on_extension, tls, PTLS_HANDSHAKE_TYPE_SERVER_HELLO,
+                                                                exttype, ptls_iovec_init(src, end - src)) != 0))
                               goto Exit;
-                          }
-                            
                           switch (exttype) {
                           case PTLS_EXTENSION_TYPE_SUPPORTED_VERSIONS:
-                                printf("PTLS_EXTENSION_TYPE_SUPPORTED_VERSIONS\n");
                               if ((ret = ptls_decode16(&found_version, &src, end)) != 0)
                                   goto Exit;
                               break;
                           case PTLS_EXTENSION_TYPE_KEY_SHARE:
-                          printf("PTLS_EXTENSION_TYPE_KEY_SHARE\n");
                               if (sh->is_retry_request) {
                                   if ((ret = ptls_decode16(&sh->retry_request.selected_group, &src, end)) != 0)
                                       goto Exit;
@@ -2593,7 +2588,6 @@ printf("3333\n");
                               }
                               break;
                           case PTLS_EXTENSION_TYPE_COOKIE:
-                          printf("PTLS_EXTENSION_TYPE_COOKIE\n");
                               assert(sh->is_retry_request);
                               ptls_decode_block(src, end, 2, {
                                   if (src == end) {
@@ -2605,13 +2599,11 @@ printf("3333\n");
                               });
                               break;
                           case PTLS_EXTENSION_TYPE_PRE_SHARED_KEY:
-                          printf("PTLS_EXTENSION_TYPE_PRE_SHARED_KEY\n");
                               assert(!sh->is_retry_request);
                               if ((ret = ptls_decode16(&selected_psk_identity, &src, end)) != 0)
                                   goto Exit;
                               break;
                           case PTLS_EXTENSION_TYPE_ENCRYPTED_CLIENT_HELLO:
-                          printf("PTLS_EXTENSION_TYPE_ENCRYPTED_CLIENT_HELLO\n");
                               assert(sh->is_retry_request);
                               if (!(tls->ech.offered || tls->ech.offered_grease)) {
                                   ret = PTLS_ALERT_UNSUPPORTED_EXTENSION;
@@ -2625,13 +2617,11 @@ printf("3333\n");
                               src = end;
                               break;
                           default:
-                                                    printf("default\n");
                               src = end;
                               break;
                           }
                       });
 
-    printf("这里退出了111\n");
     if (!is_supported_version(found_version)) {
         ret = PTLS_ALERT_ILLEGAL_PARAMETER;
         goto Exit;
@@ -2737,11 +2727,10 @@ Exit:
 static int client_handle_hello(ptls_t *tls, ptls_message_emitter_t *emitter, ptls_iovec_t message,
                                ptls_handshake_properties_t *properties)
 {
-    printf("2740\n");
     struct st_ptls_server_hello_t sh;
     ptls_iovec_t ecdh_secret = {NULL};
     int ret;
-    printf("2743\n");
+
     if ((ret = decode_server_hello(tls, &sh, message.base + PTLS_HANDSHAKE_HEADER_SIZE, message.base + message.len)) != 0)
         goto Exit;
     if (!(sh.legacy_session_id.len == tls->client.legacy_session_id.len &&
@@ -2878,7 +2867,6 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             goto Exit;
         switch (type) {
         case PTLS_EXTENSION_TYPE_SERVER_NAME:
-            printf("PTLS_EXTENSION_TYPE_SERVER_NAME\n");
             if (src != end) {
                 ret = PTLS_ALERT_DECODE_ERROR;
                 goto Exit;
@@ -2889,7 +2877,6 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             }
             break;
         case PTLS_EXTENSION_TYPE_ALPN:
-            printf("PTLS_EXTENSION_TYPE_ALPN\n");
             ptls_decode_block(src, end, 2, {
                 ptls_decode_open_block(src, end, 1, {
                     if (src == end) {
@@ -2907,7 +2894,6 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             });
             break;
         case PTLS_EXTENSION_TYPE_EARLY_DATA:
-            printf("PTLS_EXTENSION_TYPE_EARLY_DATA\n");
             if (!tls->client.using_early_data) {
                 ret = PTLS_ALERT_ILLEGAL_PARAMETER;
                 goto Exit;
@@ -2915,7 +2901,6 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             skip_early_data = 0;
             break;
         case PTLS_EXTENSION_TYPE_SERVER_CERTIFICATE_TYPE:
-            printf("PTLS_EXTENSION_TYPE_SERVER_CERTIFICATE_TYPE\n");
             if (end - src != 1) {
                 ret = PTLS_ALERT_DECODE_ERROR;
                 goto Exit;
@@ -2924,7 +2909,6 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             src = end;
             break;
         case PTLS_EXTENSION_TYPE_ENCRYPTED_CLIENT_HELLO: {
-            printf("PTLS_EXTENSION_TYPE_ENCRYPTED_CLIENT_HELLO\n");
             /* accept retry_configs only if we offered ECH but rejected */
             if (!((tls->ech.offered || tls->ech.offered_grease) && !ptls_is_ech_handshake(tls, NULL, NULL, NULL))) {
                 ret = PTLS_ALERT_UNSUPPORTED_EXTENSION;
@@ -2946,7 +2930,6 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
             src = end;
         } break;
         default:
-            printf("should_collect_unknown_extension\n");
             if (should_collect_unknown_extension(tls, properties, type)) {
                 if (unknown_extensions == &no_unknown_extensions) {
                     if ((unknown_extensions = malloc(sizeof(*unknown_extensions) * (MAX_UNKNOWN_EXTENSIONS + 1))) == NULL) {
@@ -2955,11 +2938,8 @@ static int client_handle_encrypted_extensions(ptls_t *tls, ptls_iovec_t message,
                     }
                     unknown_extensions[0].type = UINT16_MAX;
                 }
-                if ((ret = collect_unknown_extension(tls, type, src, end, unknown_extensions)) != 0){
-                    printf("should_collect_unknown_extension, ERROR\n");
+                if ((ret = collect_unknown_extension(tls, type, src, end, unknown_extensions)) != 0)
                     goto Exit;
-                }
-                    
             }
             break;
         }
@@ -5385,7 +5365,6 @@ static int handle_client_handshake_message(ptls_t *tls, ptls_message_emitter_t *
     case PTLS_STATE_CLIENT_EXPECT_SERVER_HELLO:
     case PTLS_STATE_CLIENT_EXPECT_SECOND_SERVER_HELLO:
         if (type == PTLS_HANDSHAKE_TYPE_SERVER_HELLO && is_end_of_record) {
-            printf("5388\n");
             ret = client_handle_hello(tls, emitter, message, properties);
         } else {
             ret = PTLS_ALERT_UNEXPECTED_MESSAGE;
@@ -5781,7 +5760,6 @@ static void init_record_message_emitter(ptls_t *tls, struct st_ptls_record_messa
 
 int ptls_handshake(ptls_t *tls, ptls_buffer_t *_sendbuf, const void *input, size_t *inlen, ptls_handshake_properties_t *properties)
 {
-    fprintf(stdout, "5784\n");
     struct st_ptls_record_message_emitter_t emitter;
     int ret;
 
