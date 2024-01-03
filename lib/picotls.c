@@ -2559,7 +2559,8 @@ fprintf(stderr, "legacy_compression_method\n");
     if (sh->is_retry_request)
         sh->retry_request.selected_group = UINT16_MAX;
 fprintf(stderr, "decode_extensions\n");
-    uint16_t exttype, found_version = UINT16_MAX, selected_psk_identity = UINT16_MAX;
+    if (src != end){
+        uint16_t exttype, found_version = UINT16_MAX, selected_psk_identity = UINT16_MAX;
     decode_extensions(src, end, sh->is_retry_request ? PTLS_HANDSHAKE_TYPE_PSEUDO_HRR : PTLS_HANDSHAKE_TYPE_SERVER_HELLO, &exttype,
                       {
                           if (tls->ctx->on_extension != NULL &&
@@ -2624,10 +2625,12 @@ fprintf(stderr, "decode_extensions\n");
                           }
                       });
 fprintf(stderr, "found_version\n");
-    if (!is_supported_version(found_version)) {
-        ret = PTLS_ALERT_ILLEGAL_PARAMETER;
-        goto Exit;
+        if (!is_supported_version(found_version)) {
+            ret = PTLS_ALERT_ILLEGAL_PARAMETER;
+            goto Exit;
+        }
     }
+    
     fprintf(stderr, "is_retry_request\n");
     if (!sh->is_retry_request) {
         if (selected_psk_identity != UINT16_MAX) {
