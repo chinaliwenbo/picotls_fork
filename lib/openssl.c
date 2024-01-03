@@ -2231,9 +2231,6 @@ ptls_cipher_suite_t ptls_openssl_aegis256sha512 = {.id = PTLS_CIPHER_SUITE_AEGIS
 ptls_cipher_suite_t *ptls_openssl_cipher_suites[] = {// ciphers used with sha384 (must be first)
                                                      &ptls_openssl_aes256gcmsha384,
 
-                                                    &ptls_openssl_tls12_ecdhe_rsa_aes128gcmsha256,
-                                                    &ptls_openssl_tls12_ecdhe_ecdsa_aes128gcmsha256,
-                                                    
                                                      // ciphers used with sha256
                                                      &ptls_openssl_aes128gcmsha256,
 #if PTLS_OPENSSL_HAVE_CHACHA20_POLY1305
