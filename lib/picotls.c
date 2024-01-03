@@ -2509,13 +2509,14 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
 
     *sh = (struct st_ptls_server_hello_t){{0}};
 
+    fprintf(stderr, "ignore legacy-version\n");
     /* ignore legacy-version */
     if (end - src < 2) {
         ret = PTLS_ALERT_DECODE_ERROR;
         goto Exit;
     }
     src += 2;
-
+    fprintf(stderr, "random\n");
     /* random */
     if (end - src < PTLS_HELLO_RANDOM_SIZE) {
         ret = PTLS_ALERT_DECODE_ERROR;
@@ -2523,7 +2524,7 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
     }
     sh->is_retry_request = memcmp(src, hello_retry_random, PTLS_HELLO_RANDOM_SIZE) == 0;
     src += PTLS_HELLO_RANDOM_SIZE;
-
+fprintf(stderr, "legacy_session_id\n");
     /* legacy_session_id */
     ptls_decode_open_block(src, end, 1, {
         if (end - src > 32) {
@@ -2533,7 +2534,7 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
         sh->legacy_session_id = ptls_iovec_init(src, end - src);
         src = end;
     });
-
+fprintf(stderr, "select cipher_suite\n");
     { /* select cipher_suite */
         uint16_t csid;
         if ((ret = ptls_decode16(&csid, &src, end)) != 0)
@@ -2543,7 +2544,7 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
             goto Exit;
         }
     }
-
+fprintf(stderr, "legacy_compression_method\n");
     { /* legacy_compression_method */
         uint8_t method;
         if ((ret = ptls_decode8(&method, &src, end)) != 0)
@@ -2556,7 +2557,7 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
 
     if (sh->is_retry_request)
         sh->retry_request.selected_group = UINT16_MAX;
-
+fprintf(stderr, "decode_extensions\n");
     uint16_t exttype, found_version = UINT16_MAX, selected_psk_identity = UINT16_MAX;
     decode_extensions(src, end, sh->is_retry_request ? PTLS_HANDSHAKE_TYPE_PSEUDO_HRR : PTLS_HANDSHAKE_TYPE_SERVER_HELLO, &exttype,
                       {
@@ -2621,11 +2622,12 @@ static int decode_server_hello(ptls_t *tls, struct st_ptls_server_hello_t *sh, c
                               break;
                           }
                       });
-
+fprintf(stderr, "found_version\n");
     if (!is_supported_version(found_version)) {
         ret = PTLS_ALERT_ILLEGAL_PARAMETER;
         goto Exit;
     }
+    fprintf(stderr, "is_retry_request\n");
     if (!sh->is_retry_request) {
         if (selected_psk_identity != UINT16_MAX) {
             if (!tls->client.offered_psk) {
