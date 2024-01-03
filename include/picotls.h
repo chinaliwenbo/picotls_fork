@@ -1270,13 +1270,15 @@ uint64_t ptls_decode_quicint(const uint8_t **src, const uint8_t *end);
             const uint8_t *_src = (src);                                                                                           \
             if ((_block_size64 = ptls_decode_quicint(&_src, end)) == UINT64_MAX ||                                                 \
                 (sizeof(size_t) < 8 && (_block_size64 >> (8 * sizeof(size_t))) != 0)) {                                            \
-                ret = PTLS_ALERT_DECODE_ERROR;                                                                                     \
+                ret = PTLS_ALERT_DECODE_ERROR;                                                                                         \
+                fprintf(stderr, "ptls_decode_open_block1\n");                                                                                    \
                 goto Exit;                                                                                                         \
             }                                                                                                                      \
             (src) = _src;                                                                                                          \
             _block_size = (size_t)_block_size64;                                                                                   \
         } else {                                                                                                                   \
-            if (_capacity > (size_t)(end - (src))) {                                                                               \
+            if (_capacity > (size_t)(end - (src))) {          \
+                fprintf(stderr, "ptls_decode_open_block2\n");                                                                                    \                                                                     
                 ret = PTLS_ALERT_DECODE_ERROR;                                                                                     \
                 goto Exit;                                                                                                         \
             }                                                                                                                      \
@@ -1286,7 +1288,8 @@ uint64_t ptls_decode_quicint(const uint8_t **src, const uint8_t *end);
             } while (--_capacity != 0);                                                                                            \
         }                                                                                                                          \
         if (_block_size > (size_t)(end - (src))) {                                                                                 \
-            ret = PTLS_ALERT_DECODE_ERROR;                                                                                         \
+            ret = PTLS_ALERT_DECODE_ERROR;               \                   
+            fprintf(stderr, "ptls_decode_open_block3\n");                                                                                                              \
             goto Exit;                                                                                                             \
         }                                                                                                                          \
         do {                                                                                                                       \
@@ -1294,7 +1297,8 @@ uint64_t ptls_decode_quicint(const uint8_t **src, const uint8_t *end);
             do {                                                                                                                   \
                 block                                                                                                              \
             } while (0);                                                                                                           \
-            if ((src) != end) {                                                                                                    \
+            if ((src) != end) {             \
+                fprintf(stderr, "ptls_decode_open_block3\n");                                                                                       \
                 ret = PTLS_ALERT_DECODE_ERROR;                                                                                     \
                 goto Exit;                                                                                                         \
             }                                                                                                                      \
